@@ -1,4 +1,5 @@
 streamlit
+sqlalchemy
+werkzeug
+scikit-learn
 pandas
-plotly
-dnspython
