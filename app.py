@@ -232,5 +232,3 @@ elif page == "Crop Suggestions":
         if st.button("Get Suggestion"):
             suggestion = suggest_crop(soil_type, season, weather, past_yield)
             st.success(f"Suggested Crop: {suggestion}")
-
-
