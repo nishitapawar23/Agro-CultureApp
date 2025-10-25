@@ -4,10 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Column, Integer, String, Float, ForeignKey, sessionmaker, declarative_base, relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 import numpy as np
 
-# Database Setup
+# Database Setup (Use a persistent DB for production; this is SQLite for demo)
 engine = create_engine('sqlite:///agro_cultural.db', echo=False)
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
@@ -29,10 +28,10 @@ class Crop(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     user = relationship('User')
 
+# Ensure tables are created
 Base.metadata.create_all(engine)
 
-# AI Model Setup (Simple Random Forest for Crop Suggestion)
-# Dummy data for training (expand with real data)
+# AI Model Setup
 data = {
     'soil_type': ['clay', 'sandy', 'loam', 'clay', 'sandy'],
     'season': ['summer', 'winter', 'monsoon', 'summer', 'winter'],
@@ -52,7 +51,7 @@ model.fit(X, y)
 # Streamlit App
 st.set_page_config(page_title="Agro Cultural App", page_icon="🌾", layout="wide")
 
-# Custom CSS for Creative Styling
+# Custom CSS
 st.markdown("""
     <style>
     .main { background-color: #f0f8e7; color: #2e7d32; }
@@ -64,65 +63,80 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Session State for User Management
 if 'user' not in st.session_state:
     st.session_state.user = None
 
-# Helper Functions
-def hash_password(password):
-    return generate_password_hash(password)
-
-def check_password(hashed, password):
-    return check_password_hash(hashed, password)
-
+# Helper Functions (with error handling)
 def login_user(username, password):
-    session = Session()
-    user = session.query(User).filter_by(username=username).first()
-    session.close()
-    if user and check_password(user.password_hash, password):
-        st.session_state.user = user
-        return True
+    try:
+        session = Session()
+        user = session.query(User).filter_by(username=username).first()
+        session.close()
+        if user and check_password(user.password_hash, password):
+            st.session_state.user = user
+            return True
+    except Exception as e:
+        st.error(f"Login error: {str(e)}")
     return False
 
 def register_user(username, password):
-    session = Session()
-    if session.query(User).filter_by(username=username).first():
+    try:
+        session = Session()
+        if session.query(User).filter_by(username=username).first():
+            session.close()
+            return False
+        new_user = User(username=username, password_hash=generate_password_hash(password))
+        session.add(new_user)
+        session.commit()
         session.close()
-        return False  # Username exists
-    new_user = User(username=username, password_hash=hash_password(password))
-    session.add(new_user)
-    session.commit()
-    session.close()
-    return True
+        return True
+    except Exception as e:
+        st.error(f"Registration error: {str(e)}")
+        return False
 
 def add_crop(name, soil_type, season, weather, past_yield, user_id):
-    session = Session()
-    new_crop = Crop(name=name, soil_type=soil_type, season=season, weather=weather, past_yield=past_yield, user_id=user_id)
-    session.add(new_crop)
-    session.commit()
-    session.close()
+    try:
+        session = Session()
+        new_crop = Crop(name=name, soil_type=soil_type, season=season, weather=weather, past_yield=past_yield, user_id=user_id)
+        session.add(new_crop)
+        session.commit()
+        session.close()
+    except Exception as e:
+        st.error(f"Add crop error: {str(e)}")
 
 def delete_crop(crop_id, user_id):
-    session = Session()
-    crop = session.query(Crop).filter_by(id=crop_id, user_id=user_id).first()
-    if crop:
-        session.delete(crop)
-        session.commit()
-    session.close()
+    try:
+        session = Session()
+        crop = session.query(Crop).filter_by(id=crop_id, user_id=user_id).first()
+        if crop:
+            session.delete(crop)
+            session.commit()
+        session.close()
+    except Exception as e:
+        st.error(f"Delete crop error: {str(e)}")
 
 def get_user_crops(user_id):
-    session = Session()
-    crops = session.query(Crop).filter_by(user_id=user_id).all()
-    session.close()
-    return crops
+    try:
+        session = Session()
+        crops = session.query(Crop).filter_by(user_id=user_id).all()
+        session.close()
+        return crops
+    except Exception as e:
+        st.error(f"Fetch crops error: {str(e)}")
+        return []
 
 def suggest_crop(soil_type, season, weather, past_yield):
-    soil_map = {'clay': 0, 'sandy': 1, 'loam': 2}
-    season_map = {'summer': 0, 'winter': 1, 'monsoon': 2}
-    weather_map = {'dry': 0, 'rainy': 1, 'humid': 2}
-    input_data = [[soil_map[soil_type], season_map[season], weather_map[weather], past_yield]]
-    prediction = model.predict(input_data)[0]
-    return prediction
+    try:
+        soil_map = {'clay': 0, 'sandy': 1, 'loam': 2}
+        season_map = {'summer': 0, 'winter': 1, 'monsoon': 2}
+        weather_map = {'dry': 0, 'rainy': 1, 'humid': 2}
+        input_data = [[soil_map[soil_type], season_map[season], weather_map[weather], past_yield]]
+        prediction = model.predict(input_data)[0]
+        return prediction
+    except KeyError:
+        return "Invalid input - check options."
+    except Exception as e:
+        return f"AI error: {str(e)}"
 
 # Sidebar Navigation
 st.sidebar.title("🌾 Agro Cultural App")
@@ -135,7 +149,7 @@ if st.session_state.user:
 else:
     page = st.sidebar.radio("Navigate", ["Login", "Register"])
 
-# Pages
+# Pages (same as before, with minor tweaks for errors)
 if page == "Login":
     st.title("🔐 Login")
     username = st.text_input("Username")
@@ -218,4 +232,5 @@ elif page == "Crop Suggestions":
         if st.button("Get Suggestion"):
             suggestion = suggest_crop(soil_type, season, weather, past_yield)
             st.success(f"Suggested Crop: {suggestion}")
-            st.info("This is based on a simple AI model. For accuracy, use real data.")
+
+
