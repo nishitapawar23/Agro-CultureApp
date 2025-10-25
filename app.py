@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
-from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Column, Integer, String, Float, ForeignKey, sessionmaker, declarative_base, relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
