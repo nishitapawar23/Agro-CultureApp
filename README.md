@@ -7,7 +7,7 @@ The backend provides clean REST APIs that connect with your frontend.
 
 🌱 Crop Recommendation API
 
-🧪 Soil Nutrient Analysis API
+🧪 Soil Nutrient Analysis API         
 
 🌧️ Weather Information
 
