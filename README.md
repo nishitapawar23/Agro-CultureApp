@@ -1,36 +1,23 @@
-🌾 Smart Crop Recommendation & Agriculture App – Backend
+# Agro Culture App
 
-This repository contains the backend for the Smart Agriculture Application, designed to help farmers and students with crop suggestions, soil analysis, weather information, and market price tracking.
-The backend provides clean REST APIs that connect with your frontend.
+## About
+Agro Culture App is a web-based application developed to provide agriculture-related information and basic digital support for farmers. The project focuses on creating a simple, user-friendly interface to explore agricultural content and services.
 
-🚀 Features
+## Features
+- Informational pages related to agriculture and farming
+- Simple and clean user interface
+- Responsive design for different screen sizes
+- Easy navigation for users
 
-🌱 Crop Recommendation API
+## Tech Stack
+- Frontend: HTML, CSS, JavaScript
+- Tools: VS Code, Git
 
-🧪 Soil Nutrient Analysis API         
+## How to Run
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/nishitapawar23/Agro-CultureApp.git
 
-🌧️ Weather Information
-
-📊 Market Price Lookup
-
-🤖 Optional: Machine Learning Model Integration
-
-🗄️ Database support (MongoDB / Firebase)
-
-🔌 Easy-to-use REST APIs
-
-🔐 CORS Enabled
-
-🛠 Tech Stack
-
-Backend: Node.js + Express
-(If using Flask, update here — but Node.js preferred for students)
-
-Database: MongoDB / Firebase
-
-ML Model (optional): Python (.pkl model)
-
-Frontend: Your existing UI (HTML/CSS/JS or React)
 
 📁 Project Structure
 backend/
