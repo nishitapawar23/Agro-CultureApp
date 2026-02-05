@@ -61,7 +61,6 @@ POST /api/crop
 }
 
 2️⃣ Soil Nutrient Analysis
-
 POST /api/soil
 
 {
@@ -71,11 +70,9 @@ POST /api/soil
 }
 
 3️⃣ Weather Information
-
 GET /api/weather?city=Pune
 
 4️⃣ Market Price
-
 GET /api/prices?crop=wheat
 
 🤖 ML Model (Optional)
@@ -93,11 +90,8 @@ POST /api/predict
 🌐 Deployment Options
 
 Render (recommended)
-
 Railway.app
-
 Vercel (serverless functions)
-
 Firebase Cloud Functions
 
 📜 License
